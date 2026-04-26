@@ -40,15 +40,15 @@ On récupère le fichier **`libfoo.so`** — c'est lui qui contient le secret et
 
 ---
 
-### Étape 3 — Analyse statique du binaire (Ghidra)
+### Étape 3 — Analyse statique du binaire 
 
-On charge `libfoo.so` dans **Ghidra** et on cherche la fonction :
+On charge `libfoo.so` et on cherche la fonction :
 
 ```
 Java_sg_vantagepoint_uncrackable2_CodeCheck_bar
 ```
 
-Dans le code décompilé, on repère la fonction **`strncmp`** qui compare ce que l'utilisateur tape avec une valeur stockée à l'adresse `local_34`.
+Dans le code décompilé, on repère la fonction **`strncmp`** qui compare ce que l'utilisateur tape avec une valeur stockée à l'adresse.
 
 ![Décompilation Ghidra avec strncmp](img_p2_1.png)
 
