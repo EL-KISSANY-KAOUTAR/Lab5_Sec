@@ -1,77 +1,61 @@
-# 🔓 UnCrackable Level 2 — Android Reverse Engineering Writeup
+# 🔓 Lab 5 — UnCrackable Level 2
 
-> **Objectif :** Retrouver le secret caché dans l'application Android UnCrackable Level 2 en analysant son code natif.
+## 🎯 C'est quoi le but ?
 
----
-
-## 🛠️ Outils utilisés
-
-| Outil | Rôle |
-|-------|------|
-| **JADX-GUI** | Décompilation du code Java de l'APK |
-| **Ghidra** | Analyse statique du binaire natif `.so` |
-| **Python** | Décodage hexadécimal et inversion de chaîne |
+Dans ce lab, j'avais une application Android et je devais trouver le mot secret caché dedans. L'application ne donnait aucun indice, donc j'ai dû analyser son code pour comprendre comment elle vérifie le mot de passe.
 
 ---
 
-## 📋 Étapes
+## 🧰 Ce que j'ai utilisé
 
-### Étape 1 — Analyse du code Java (JADX)
+- **JADX** → pour lire le code Java de l'APK
+- **Ghidra** → pour analyser le code natif en C
+- **Python** → pour décoder et retrouver le secret
 
-On ouvre l'APK avec **JADX-GUI** et on localise la classe `CodeCheck`.
+---
 
-On découvre que la validation **n'est pas faite en Java**. La ligne :
+## 🔍 Ce que j'ai fait
+
+### 1. J'ai ouvert l'APK avec JADX
+
+La première chose que j'ai faite c'est regarder le code Java. J'ai trouvé la classe `CodeCheck` mais elle ne contenait pas vraiment la logique de vérification. J'ai vu cette ligne :
+
 ```java
 System.loadLibrary("foo")
 ```
-indique qu'une bibliothèque native (C/C++) nommée **`libfoo.so`** gère la sécurité.
 
-![Classe CodeCheck dans JADX](img_p1_1.png)
+Ça m'a indiqué que la vraie vérification se passe dans une bibliothèque native `libfoo.so`, pas dans le Java.
 
----
-
-### Étape 2 — Extraction de la bibliothèque native
-
-On extrait l'APK (comme un ZIP) et on va dans le dossier **`lib/x86/`**.
-
-On récupère le fichier **`libfoo.so`** — c'est lui qui contient le secret et les protections anti-reverse.
-
-![Extraction de libfoo.so](img_p1_2.png)
+![CodeCheck dans JADX](img_p1_1.png)
 
 ---
 
-### Étape 3 — Analyse statique du binaire 
+### 2. J'ai extrait le fichier libfoo.so
 
-On charge `libfoo.so` et on cherche la fonction :
+J'ai décompressé l'APK comme un fichier ZIP et j'ai navigué dans `lib/x86/` pour récupérer `libfoo.so`. C'est ce fichier qui contient le secret.
 
-```
-Java_sg_vantagepoint_uncrackable2_CodeCheck_bar
-```
-
-Dans le code décompilé, on repère la fonction **`strncmp`** qui compare ce que l'utilisateur tape avec une valeur stockée à l'adresse.
-
-![Décompilation Ghidra avec strncmp](img_p2_1.png)
+![Extraction libfoo.so](img_p1_2.png)
 
 ---
 
-### Étape 4 — Récupération des données hexadécimales
+### 3. J'ai analysé libfoo.so
 
-En analysant le code Ghidra, on voit que la chaîne secrète est construite via `builtin_strncpy` avec la valeur `"Thanks for all the fish"` encodée en mémoire.
+J'ai chargé le fichier et cherché la fonction responsable de la vérification. Dans le code décompilé, j'ai repéré un `strncmp` — c'est lui qui compare ce que l'utilisateur tape avec le vrai secret stocké en mémoire.
 
-On extrait les octets hexadécimaux correspondants.
+![Analyse dans Ghidra](img_p2_1.png)
 
 ---
 
-### Étape 5 — Décodage de l'hexadécimal (Python)
+### 4. J'ai décodé le secret en Python
 
-On utilise Python pour transformer les octets hex en texte lisible :
+Les données étaient en hexadécimal, donc j'ai utilisé Python pour les convertir en texte :
 
 ```python
 hex_data = "687369660eht6120726f6620736b6e616854"
 print(bytes.fromhex(hex_data).decode("ascii"))
 ```
 
-Résultat :
+Résultat obtenu :
 ```
 hsif eht lla rof sknahT
 ```
@@ -80,16 +64,16 @@ hsif eht lla rof sknahT
 
 ---
 
-### Étape 6 — Inversion de la chaîne (Python)
+### 5. J'ai inversé la chaîne
 
-Le texte est stocké en **Little-Endian** (à l'envers). On inverse avec `[::-1]` :
+Le texte était stocké à l'envers (Little-Endian), donc j'ai juste inversé la chaîne :
 
 ```python
 s = "hsif eht lla rof sknahT"
 print(s[::-1])
 ```
 
-Résultat :
+Et j'ai obtenu :
 ```
 Thanks for all the fish
 ```
@@ -98,17 +82,15 @@ Thanks for all the fish
 
 ---
 
-### Étape 7 — Validation dans l'application ✅
+### 6. J'ai validé dans l'application
 
-On entre **`Thanks for all the fish`** dans l'application UnCrackable Level 2.
+J'ai entré `Thanks for all the fish` dans l'app et... **ça a marché !** 🎉
 
-L'application affiche **"Success! This is the correct secret."** 🎉
-
-![Succès dans l'application](img_p3_2.png)
+![Succès](img_p3_2.png)
 
 ---
 
-## 🔑 Flag
+## ✅ Flag trouvé
 
 ```
 Thanks for all the fish
@@ -116,10 +98,6 @@ Thanks for all the fish
 
 ---
 
-## 📌 Résumé de la méthode
+## 💡 Ce que j'ai appris
 
-```
-APK → JADX (Java) → libfoo.so → Ghidra (C natif) → strncmp → hex → Python → flag
-```
-
-Le secret était dans la bibliothèque native **C**, invisible depuis Java, stocké à l'envers en mémoire.
+Ce lab m'a montré que la sécurité ne se limite pas au code Java visible — les bibliothèques natives en C peuvent cacher des informations importantes. Il faut savoir utiliser des outils comme Ghidra pour aller plus loin dans l'analyse.
