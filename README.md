@@ -26,7 +26,7 @@ System.loadLibrary("foo")
 ```
 indique qu'une bibliothèque native (C/C++) nommée **`libfoo.so`** gère la sécurité.
 
-![Classe CodeCheck dans JADX](images/img_p1_1.png)
+![Classe CodeCheck dans JADX](img_p1_1.png)
 
 ---
 
@@ -36,7 +36,7 @@ On extrait l'APK (comme un ZIP) et on va dans le dossier **`lib/x86/`**.
 
 On récupère le fichier **`libfoo.so`** — c'est lui qui contient le secret et les protections anti-reverse.
 
-![Extraction de libfoo.so](images/img_p1_2.png)
+![Extraction de libfoo.so](img_p1_2.png)
 
 ---
 
@@ -50,7 +50,7 @@ Java_sg_vantagepoint_uncrackable2_CodeCheck_bar
 
 Dans le code décompilé, on repère la fonction **`strncmp`** qui compare ce que l'utilisateur tape avec une valeur stockée à l'adresse `local_34`.
 
-![Décompilation Ghidra avec strncmp](images/img_p2_1.png)
+![Décompilation Ghidra avec strncmp](img_p2_1.png)
 
 ---
 
@@ -76,7 +76,7 @@ Résultat :
 hsif eht lla rof sknahT
 ```
 
-![Décodage Python](images/img_p2_2.png)
+![Décodage Python](img_p2_2.png)
 
 ---
 
@@ -94,7 +94,7 @@ Résultat :
 Thanks for all the fish
 ```
 
-![Inversion Python](images/img_p3_1.png)
+![Inversion Python](img_p3_1.png)
 
 ---
 
@@ -104,7 +104,7 @@ On entre **`Thanks for all the fish`** dans l'application UnCrackable Level 2.
 
 L'application affiche **"Success! This is the correct secret."** 🎉
 
-![Succès dans l'application](images/img_p3_2.png)
+![Succès dans l'application](img_p3_2.png)
 
 ---
 
