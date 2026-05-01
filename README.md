@@ -1,12 +1,12 @@
-# 🔓 Lab 5 — UnCrackable Level 2
+#  Lab 5 — UnCrackable Level 2
 
-## 🎯 C'est quoi le but ?
+##  C'est quoi le but ?
 
 Dans ce lab, j'avais une application Android et je devais trouver le mot secret caché dedans. L'application ne donnait aucun indice, donc j'ai dû analyser son code pour comprendre comment elle vérifie le mot de passe.
 
 ---
 
-## 🧰 Ce que j'ai utilisé
+##  Ce que j'ai utilisé
 
 - **JADX** → pour lire le code Java de l'APK
 - **Ghidra** → pour analyser le code natif en C
@@ -14,7 +14,7 @@ Dans ce lab, j'avais une application Android et je devais trouver le mot secret 
 
 ---
 
-## 🔍 Ce que j'ai fait
+##  Ce que j'ai fait
 
 ### 1. J'ai ouvert l'APK avec JADX
 
@@ -90,7 +90,7 @@ J'ai entré `Thanks for all the fish` dans l'app et... **ça a marché !** 🎉
 
 ---
 
-## ✅ Flag trouvé
+## Flag trouvé
 
 ```
 Thanks for all the fish
